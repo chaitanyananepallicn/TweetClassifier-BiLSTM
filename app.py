@@ -153,6 +153,5 @@ async def predict_api(req: TweetRequest):
     }
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))  # use Render's PORT, fallback 8000
-    print(f"\n🚀 Server running on port {port}")
-    uvicorn.run("app:app", host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT", 10000))  # Default 10000 on Render
+    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
