@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tweet Classifier</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Logo Section -->
+    <div class="logo">
+      <img src="/static/twitter.jpeg" alt="Twitter Logo">
+    </div>
+
+    <!-- Heading -->
+    <h1>Tweet Classifier</h1>
+
+    <!-- Input -->
+    <textarea id="tweetInput" rows="4" placeholder="Enter a tweet..."></textarea>
+    <button onclick="predict()">Classify Tweet</button>
+
+    <!-- Result -->
+    <div id="result" class="hidden">
+      <div id="predLabel"></div>
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    async function predict() {
+      const tweet = document.getElementById("tweetInput").value.trim();
+      if (!tweet) return alert("Please enter a tweet!");
+
+      const res = await fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tweet })
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      // Show predicted label
+      const predLabelDiv = document.getElementById("predLabel");
+      predLabelDiv.textContent = "Predicted Label: " + data.predicted_label;
+      predLabelDiv.className = "";
+      predLabelDiv.classList.add(
+        data.predicted_label === "hate" ? "pred-hate" :
+        data.predicted_label === "offensive" ? "pred-offensive" : "pred-neither"
+      );
+
+      // Show result box
+      document.getElementById("result").classList.remove("hidden");
+
+      // Destroy old chart if exists
+      if (window.probChart) window.probChart.destroy();
+
+      // Chart.js
+      const ctx = document.getElementById("chart").getContext("2d");
+      window.probChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: Object.keys(data.probabilities),
+          datasets: [{
+            label: "Probability",
+            data: Object.values(data.probabilities),
+            backgroundColor: ["#e74c3c", "#f39c12", "#2ecc71"]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, max: 1 } }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
