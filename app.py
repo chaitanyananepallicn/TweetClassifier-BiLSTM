@@ -4,6 +4,7 @@ import re
 import html
 import emoji
 import numpy as np
+import os
 
 import uvicorn 
 from fastapi import FastAPI, Request, Form
@@ -29,10 +30,12 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # === Load config, tokenizer, model at startup ===
-MODEL_PATH = r"C:\Users\91781\OneDrive\Desktop\MLProjects\HateSpeechOffensive-LSTM\model.keras"  # adjust or use relative path
-TOKENIZER_PATH = "tokenizer.pickle"
-CONFIG_PATH = "config.json"
-SYMSPELL_DICT = r"C:\Users\91781\OneDrive\Desktop\MLProjects\datasets\fdsymspelly.txt"  # adjust
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+MODEL_PATH = os.path.join(BASE_DIR, "model.keras")
+TOKENIZER_PATH = os.path.join(BASE_DIR, "tokenizer.pickle")
+CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
+SYMSPELL_DICT = os.path.join(BASE_DIR,"fdsymspelly.txt")
 
 model = None
 tokenizer = None
