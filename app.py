@@ -150,6 +150,6 @@ async def predict_api(req: TweetRequest):
     }
 
 if __name__ == "__main__":
-    print("\n🚀 Server running! Open this link in your browser:")
-    print("👉 http://127.0.0.1:8000/\n")   # ⬅️ changed to `/` instead of `/docs`
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+    port = int(os.environ.get("PORT", 8000))  # use Render's PORT, fallback 8000
+    print(f"\n🚀 Server running on port {port}")
+    uvicorn.run("app:app", host="0.0.0.0", port=port)
